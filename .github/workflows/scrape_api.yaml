@@ -15,7 +15,7 @@ jobs:
 
       - name: Scrape API and append to JSON
         run: |
-            usernames=("Margherita427254" "Katarina451478" "000980.98dceJWb" "Kesi271320" "Aleksandra304260" "mw9R16" "JoSerrao1" "MongBalzs1" "Gosia651728" "SvitlanaDol" "ClaudiaVan847027" "ThomasSena12" "Marco253734" "Kristin131790" "Martial576200" "EaJK3" "Daniela172883" "detached" "Andrea231616" "Solky13" "Agnes312826" "tauferer" "Fabienne886023" “RosaNinja” “Inger436396” “Flo318108” “Esther301073” “Mashaagoyo” “Mathias419853” “SebGru”) # Define your list of usernames here          
+            usernames=("Margherita427254" "Katarina451478" "000980.98dceJWb" "Kesi271320" "Aleksandra304260" "mw9R16" "JoSerrao1" "MongBalzs1" "Gosia651728" "SvitlanaDol" "ClaudiaVan847027" "ThomasSena12" "Marco253734" "Kristin131790" "Martial576200" "EaJK3" "Daniela172883" "detached" "Andrea231616" "Solky13" "Agnes312826" "tauferer" "Fabienne886023" "RosaNinja" "Inger436396" "Flo318108" "Esther301073" "Mashaagoyo" "Mathias419853" "SebGru") # Define your list of usernames here          
             for username in "${usernames[@]}"; do
               api_response=$(curl -s "https://www.duolingo.com/2017-06-30/users?username=${username}")
             
