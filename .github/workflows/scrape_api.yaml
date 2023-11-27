@@ -1,0 +1,3 @@
+on:
+  schedule:
+    - cron: '0 0,8,16 * * *' # This schedule runs at midnight, 8 AM, and 4 PM UTC time.
