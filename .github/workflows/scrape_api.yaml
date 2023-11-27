@@ -1,3 +1,38 @@
+name: Scrape Duolingo API
 on:
   schedule:
-    - cron: '0 0,8,16 * * *' # This schedule runs at midnight, 8 AM, and 4 PM UTC time.
+    - cron: '0 0,8,16 * * *'
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Create JSON directory
+        run: mkdir -p json
+
+      - name: Scrape API and append to JSON
+        run: |
+            usernames=("Margherita427254" "Katarina451478" "000980.98dceJWb" "Kesi271320" "Aleksandra304260" "mw9R16" "JoSerrao1" "MongBalzs1" "Gosia651728" "SvitlanaDol" "ClaudiaVan847027" "ThomasSena12" "Marco253734" "Kristin131790" "Martial576200" "EaJK3" "Daniela172883" "detached" "Andrea231616" "Solky13" "Agnes312826" "tauferer" "Fabienne886023" “RosaNinja” “Inger436396” “Flo318108” “Esther301073” “Mashaagoyo” “Mathias419853” “SebGru”) # Define your list of usernames here          
+            for username in "${usernames[@]}"; do
+              api_response=$(curl -s "https://www.duolingo.com/2017-06-30/users?username=${username}")
+            
+            # Check for errors or unexpected data in the API response
+            if [[ $api_response == *"error"* || $api_response == *"not found"* ]]; then
+              echo "Error or not found for username: ${username}"
+            else
+              existing_data=$(cat "json/${username}.json")
+              new_data="${existing_data}\n${api_response}"
+              echo -e "$new_data" > "json/${username}.json"
+            fi
+          done
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add json
+          git commit -m "Update JSON data"
+          git push
