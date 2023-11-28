@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@4
+        uses: actions/checkout@v4.1.1
       - name: Create JSON directory
         run: mkdir -p json
       - name: Scrape API and append to JSON
