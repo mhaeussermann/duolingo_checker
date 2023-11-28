@@ -13,23 +13,34 @@ jobs:
         run: mkdir -p json
       - name: Scrape API and append to JSON
         run: |
-          usernames=("Margherita427254" "Katarina451478" "000980.98dceJWb" "Kesi271320" "Aleksandra304260" "mw9R16" "JoSerrao1" "MongBalzs1" "Gosia651728" "SvitlanaDol" "ClaudiaVan847027" "ThomasSena12" "Marco253734" "Kristin131790" "Martial576200" "EaJK3" "Daniela172883" "detached" "Andrea231616" "Solky13" "Agnes312826" "tauferer" "Fabienne886023" "RosaNinja" "Inger436396" "Flo318108" "Esther301073" "Mashaagoyo" "Mathias419853" "SebGru") # Define your list of usernames here
+          usernames=("Margherita427254" "Katarina451478" "000980.98dceJWb" "Kesi271320" "Aleksandra304260" "mw9R16" "JoSerrao1" "MongBalzs1" "Gosia651728" "SvitlanaDol" "ClaudiaVan847027" "ThomasSena12" "Marco253734" "Kristin131790" "Martial576200" "EaJK3" "Daniela172883" "detached" "Andrea231616" "Solky13" "Agnes312826" "tauferer" "Fabienne886023" "RosaNinja" "Inger436396" "Flo318108" "Esther301073" "Mashaagoyo" "Mathias419853" "SebGru")
           for username in "${usernames[@]}"; do
             api_response=$(curl -s "https://www.duolingo.com/2017-06-30/users?username=${username}")
             
-            # Check for errors or unexpected data in the API response
-            if [[ $api_response == *"error"* || $api_response == *"not found"* ]]; then
+            # Improved error checking
+            if [[ -z "$api_response" ]]; then
+              echo "No response for username: ${username}"
+              continue
+            elif [[ $api_response == *"error"* || $api_response == *"not found"* ]]; then
               echo "Error or not found for username: ${username}"
-            else
-              existing_data=$(cat "json/${username}.json")
-              new_data="${existing_data}\n${api_response}"
-              echo -e "$new_data" > "json/${username}.json"
+              continue
             fi
+
+            # Handling JSON file creation and appending
+            json_file="json/${username}.json"
+            if [[ -f "$json_file" ]]; then
+              existing_data=$(cat "$json_file")
+              new_data="${existing_data}\n${api_response}"
+            else
+              echo "Creating new file for username: ${username}"
+              new_data="${api_response}"
+            fi
+            echo -e "$new_data" > "$json_file"
           done
       - name: Commit and push changes
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add json
-          git commit -m "Update JSON data"
-          git push
+          git commit -m "Update JSON data" || echo "No changes to commit"
+          git push || echo "No changes to push"
