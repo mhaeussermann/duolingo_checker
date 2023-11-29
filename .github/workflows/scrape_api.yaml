@@ -2,10 +2,11 @@ name: Scrape Duolingo API
 on:
   schedule:
     - cron: '0 0,8,16 * * *'
-
 jobs:
   scrape:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Grants permission to commit and push changes to the repository
     steps:
       - name: Check out code
         uses: actions/checkout@v4.1.1
@@ -17,7 +18,7 @@ jobs:
           for username in "${usernames[@]}"; do
             api_response=$(curl -s "https://www.duolingo.com/2017-06-30/users?username=${username}")
             
-            # Improved error checking
+            # Error checking
             if [[ -z "$api_response" ]]; then
               echo "No response for username: ${username}"
               continue
@@ -26,21 +27,16 @@ jobs:
               continue
             fi
 
-            # Handling JSON file creation and appending
+            # File handling with timestamp
+            timestamp=$(date +"%Y-%m-%dT%H:%M:%S")
             json_file="json/${username}.json"
-            if [[ -f "$json_file" ]]; then
-              existing_data=$(cat "$json_file")
-              new_data="${existing_data}\n${api_response}"
-            else
-              echo "Creating new file for username: ${username}"
-              new_data="${api_response}"
-            fi
-            echo -e "$new_data" > "$json_file"
+            echo "{\"timestamp\": \"${timestamp}\", \"data\": ${api_response}}" >> "$json_file"
           done
+
       - name: Commit and push changes
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git add json
-          git commit -m "Update JSON data" || echo "No changes to commit"
+          git add json/
+          git commit -m "Update JSON data" -a || echo "No changes to commit"
           git push || echo "No changes to push"
