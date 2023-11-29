@@ -32,7 +32,6 @@ jobs:
             json_file="json/${username}.json"
             echo "{\"timestamp\": \"${timestamp}\", \"data\": ${api_response}}" >> "$json_file"
           done
-
       - name: Commit and push changes
         run: |
           git config --local user.email "actions@github.com"
