@@ -36,7 +36,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          git pull --rebase  # Pull the latest changes and rebase
           git add json/
           git commit -m "Update JSON data" -a || echo "No changes to commit"
+          git pull --rebase  # Pull the latest changes and rebase
           git push || echo "No changes to push"
